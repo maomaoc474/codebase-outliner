@@ -1,6 +1,10 @@
 ---
-name: outliner
+name: codebase-outliner
 description: "Scan and outline project structure, file dependencies, API endpoints, and API call references — exported as a Markdown file with Mermaid diagrams. Use this skill whenever the user asks to outline, map, visualize, or diagram a project's structure, file dependencies, or API connections. Also activate when users want to understand how frontend and backend projects relate, trace API calls across codebases, generate architecture docs, or get an overview of a new codebase. Supports any web stack (React, Vue, Angular, Express, Flask, Django, FastAPI, NestJS, etc.) and multiple project directories scanned together."
+license: MIT
+metadata:
+  author: maomaoc474
+  version: "1.0.0"
 ---
 
 # Outliner
