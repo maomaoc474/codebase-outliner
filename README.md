@@ -32,10 +32,10 @@ Clone into the skills directory:
 
 ```bash
 # macOS / Linux
-git clone https://github.com/YOUR_USERNAME/codebase-outliner ~/.claude/skills/outliner
+git clone https://github.com/maomaoc474/codebase-outliner ~/.claude/skills/outliner
 
 # Windows
-git clone https://github.com/YOUR_USERNAME/codebase-outliner %USERPROFILE%\.claude\skills\outliner
+git clone https://github.com/maomaoc474/codebase-outliner %USERPROFILE%\.claude\skills\outliner
 ```
 
 Restart Claude Code. The skill triggers automatically when you ask to outline a project.
