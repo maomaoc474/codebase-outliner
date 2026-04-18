@@ -1,10 +1,12 @@
-# Outliner - Claude Code Skill
+# Codebase Outliner
 
 Scan and outline any project's structure, file dependencies, API endpoints, and API call references -- exported as a Markdown file with Mermaid diagrams.
 
+Works with **any AI coding agent**: Claude Code, GitHub Copilot, Cursor, Windsurf, Aider, and others.
+
 ## What It Does
 
-The outliner skill runs a 7-phase analysis on one or more project directories:
+Runs a 7-phase analysis on one or more project directories:
 
 1. **Discovery** -- Detects project roles (frontend/backend) and frameworks from `package.json`, `requirements.txt`, etc.
 2. **Structure Scan** -- Builds annotated file trees, flags entry points, route files, and service layers
@@ -24,35 +26,71 @@ The outliner skill runs a 7-phase analysis on one or more project directories:
 
 ## Installation
 
-Clone this repo into your Claude Code skills directory:
+### Claude Code
+
+Clone into the skills directory:
 
 ```bash
 # macOS / Linux
-git clone https://github.com/YOUR_USERNAME/claude-skill-outliner ~/.claude/skills/outliner
+git clone https://github.com/YOUR_USERNAME/codebase-outliner ~/.claude/skills/outliner
 
 # Windows
-git clone https://github.com/YOUR_USERNAME/claude-skill-outliner %USERPROFILE%\.claude\skills\outliner
+git clone https://github.com/YOUR_USERNAME/codebase-outliner %USERPROFILE%\.claude\skills\outliner
 ```
 
-Or download and copy the files manually into `~/.claude/skills/outliner/`.
+Restart Claude Code. The skill triggers automatically when you ask to outline a project.
 
-### Verify
+### GitHub Copilot
 
-After installation, the skill directory should look like:
+Copy the adapter and supporting files into your project:
 
+```bash
+# Copy the Copilot instructions file
+cp codebase-outliner/.github/copilot-instructions.md YOUR_PROJECT/.github/copilot-instructions.md
+
+# Copy the core prompt and reference files
+cp codebase-outliner/PROMPT.md YOUR_PROJECT/PROMPT.md
+cp -r codebase-outliner/references YOUR_PROJECT/references
 ```
-~/.claude/skills/outliner/
-├── SKILL.md
-└── references/
-    ├── detection-patterns.md
-    └── output-template.md
+
+Then ask Copilot to "outline this project".
+
+### Cursor
+
+Copy the rules file and supporting files into your project:
+
+```bash
+mkdir -p YOUR_PROJECT/.cursor/rules
+cp codebase-outliner/.cursor/rules/outliner.mdc YOUR_PROJECT/.cursor/rules/outliner.mdc
+
+# Copy the core prompt and reference files
+cp codebase-outliner/PROMPT.md YOUR_PROJECT/PROMPT.md
+cp -r codebase-outliner/references YOUR_PROJECT/references
 ```
 
-Restart Claude Code. The skill activates automatically when you ask to outline or diagram a project.
+Then ask Cursor to "outline this project".
+
+### Windsurf
+
+Copy the rules file and supporting files into your project:
+
+```bash
+cp codebase-outliner/.windsurfrules YOUR_PROJECT/.windsurfrules
+
+# Copy the core prompt and reference files
+cp codebase-outliner/PROMPT.md YOUR_PROJECT/PROMPT.md
+cp -r codebase-outliner/references YOUR_PROJECT/references
+```
+
+Then ask Windsurf to "outline this project".
+
+### Any Other Agent
+
+The core instructions are in [`PROMPT.md`](PROMPT.md) -- a self-contained, agent-agnostic markdown file. Point your agent at it however your tool supports custom instructions. The two files in [`references/`](references/) provide detection patterns and the output template.
 
 ## Usage
 
-Just ask Claude Code in natural language:
+Ask your AI agent in natural language:
 
 ```
 outline this project
@@ -66,7 +104,7 @@ map the file dependencies and API connections
 diagram the architecture of ./frontend and ./backend
 ```
 
-The skill generates a `PROJECT-OUTLINE.md` in your current directory (or wherever you specify).
+The agent generates a `PROJECT-OUTLINE.md` in your current directory (or wherever you specify).
 
 ## Example Output
 
@@ -76,24 +114,24 @@ The generated outline includes:
 
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
-| Frontend | Vue 3 | 3.5.x | SPA UI framework |
-| Backend | Express | 5.1.0 | REST API server |
-| Database | SAP HANA | -- | Persistence |
+| Frontend | React | 18.x | SPA UI framework |
+| Backend | Express | 4.x | REST API server |
+| Database | PostgreSQL | 16.x | Persistence |
 
 ### File Dependency Graph (Mermaid)
 
 ```mermaid
 graph LR
   subgraph Frontend
-    App["App.vue"] --> API["services/api.js"]
+    App["App.tsx"] --> API["services/api.ts"]
     App --> Views["views/\n9 files"]
     Views --> API
   end
 
   subgraph Backend
-    Start["start.js"] --> Routes["routes/"]
+    Start["index.ts"] --> Routes["routes/"]
     Routes --> Services["services/"]
-    Services --> DB["database.service.js"]
+    Services --> DB["database.ts"]
   end
 
   API -.->|"REST /api/*"| Start
@@ -106,8 +144,8 @@ graph LR
 
 | # | Method | Path | File | Middleware |
 |---|--------|------|------|-----------|
-| 1 | POST | /api/auth/login | routes/auth.js:42 | -- |
-| 2 | GET | /api/users | routes/user.js:8 | auth |
+| 1 | POST | /api/auth/login | routes/auth.ts:42 | -- |
+| 2 | GET | /api/users | routes/user.ts:8 | auth |
 
 ### API Cross-Reference Diagram
 
@@ -115,7 +153,7 @@ Frontend calls are matched to backend endpoints, with unmatched calls and unused
 
 ## Multi-Project Support
 
-Point the skill at multiple directories and it will:
+Point the outliner at multiple directories and it will:
 - Scan each project independently
 - Use Mermaid subgraphs per project
 - Cross-reference API calls across projects
@@ -130,7 +168,25 @@ For projects with 100+ source files:
 
 ## How It Works
 
-The skill uses Claude Code's built-in tools (Glob, Grep, Read) to scan your project. No external dependencies, no build step, no configuration. The detection patterns cover 10+ frameworks and are defined in [`references/detection-patterns.md`](references/detection-patterns.md). The output follows the template in [`references/output-template.md`](references/output-template.md).
+The agent uses its file search and reading capabilities to scan your project. No external dependencies, no build step, no configuration. The detection patterns cover 10+ frameworks and are defined in [`references/detection-patterns.md`](references/detection-patterns.md). The output follows the template in [`references/output-template.md`](references/output-template.md).
+
+## Repo Structure
+
+```
+codebase-outliner/
+├── PROMPT.md                          # Agent-agnostic instructions (universal)
+├── SKILL.md                           # Claude Code native skill format
+├── references/
+│   ├── detection-patterns.md          # Regex patterns for 10+ frameworks
+│   └── output-template.md            # Output structure template
+├── .github/
+│   └── copilot-instructions.md        # GitHub Copilot adapter
+├── .cursor/
+│   └── rules/outliner.mdc            # Cursor adapter
+├── .windsurfrules                     # Windsurf adapter
+├── README.md
+└── LICENSE
+```
 
 ## License
 
